@@ -1,0 +1,17 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gastos
+  datasource:
+    url: jdbc:mysql://localhost:3306/gastos_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: root          # mejor un usuario propio con permisos solo sobre gastos_db
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate    # el esquema lo creas tú con el script SQL
+    properties:
+      hibernate:
+        format_sql: true

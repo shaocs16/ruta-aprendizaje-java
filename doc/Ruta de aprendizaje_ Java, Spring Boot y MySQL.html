@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruta de aprendizaje: Java, Spring Boot y MySQL</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f6f8;--sf:#fff;--ink:#17212b;--mu:#5b6773;--ln:#d8dee4;--ac:#0f6e5a;--cb:#e9eff3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#12181d;--sf:#1a2229;--ink:#e6ecf0;--mu:#9aa7b2;--ln:#2b363f;--ac:#4fc3a1;--cb:#0e1317}}
+:root[data-theme=dark]{--bg:#12181d;--sf:#1a2229;--ink:#e6ecf0;--mu:#9aa7b2;--ln:#2b363f;--ac:#4fc3a1;--cb:#0e1317}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Public Sans",system-ui,sans-serif}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;max-width:1120px;margin:0 auto;padding:24px 20px}
+nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start}
+nav b{display:block;margin-bottom:8px}
+nav a{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;border-left:3px solid var(--ln);color:var(--ink);text-decoration:none;font-size:15px}
+nav a:hover,nav a:focus-visible{border-color:var(--ac);background:var(--sf)}
+a:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+h1{font-size:2rem;line-height:1.2;margin:0 0 8px}
+h2{font-size:1.5rem;margin:0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h3{font-size:1rem;margin:16px 0 4px}
+p,li{max-width:75ch}
+.mu{color:var(--mu)}
+section{margin:0 0 48px;padding-top:12px;border-top:2px solid var(--ink)}
+.d{display:inline-flex;gap:2px;vertical-align:middle}
+.d b{width:6px;height:14px;background:var(--ln);border-radius:1px;margin:0}
+.d b.on{background:var(--ac)}
+details{background:var(--sf);border:1px solid var(--ln);border-radius:6px;margin:10px 0}
+summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"\25B8";display:inline-block;margin-right:8px;transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+.in{padding:0 16px 14px}
+pre{background:var(--cb);padding:12px 14px;border-radius:5px;overflow-x:auto;font:13px/1.5 "JetBrains Mono",ui-monospace,monospace;margin:8px 0}
+code{background:var(--cb);padding:1px 5px;border-radius:3px;font:13px "JetBrains Mono",ui-monospace,monospace}
+pre code{padding:0;background:none}
+.w{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--ln);padding:6px 8px;text-align:left;vertical-align:top}
+ul.ck{list-style:none;padding:0}
+.ck label{display:flex;gap:8px;padding:2px 0}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:4px 16px 12px}
+@media(max-width:800px){.app{grid-template-columns:1fr;gap:16px}nav{position:static}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style></head><body><div class="app">
+<nav aria-label="Niveles"><b>Los cinco niveles</b>
+<a href="#n1">1. Gastos personales <i class="d" data-n="1"></i></a>
+<a href="#n2">2. Biblioteca comunitaria <i class="d" data-n="2"></i></a>
+<a href="#n3">3. Reservas de coworking <i class="d" data-n="3"></i></a>
+<a href="#n4">4. Pedidos y stock <i class="d" data-n="4"></i></a>
+<a href="#n5">5. Venta de entradas <i class="d" data-n="5"></i></a></nav>
+<main>
+<h1>Ruta de aprendizaje: Java, Spring Boot y MySQL</h1>
+<p class="mu">Cinco proyectos independientes que suben de dificultad. Tú escribes todo el código: aquí tienes qué debe hacer cada pieza, no cómo programarla. Al terminar un proyecto, envíame tu implementación y la reviso como una revisión de código senior (arquitectura, Clean Code, SOLID, persistencia, errores, rendimiento y pruebas). No avanzamos al siguiente hasta que lo pidas.</p>
+
+<section id="n1"><h2>1. Control de gastos personales <i class="d" data-n="1"></i><span class="mu" style="font-size:1rem;font-weight:400">Fácil</span></h2>
+<details open><summary>A. Información general</summary><div class="in">
+<p><b>Objetivo:</b> construir tu primera API REST completa con Spring Boot y persistirla en MySQL.<br>
+<b>Problema real:</b> anotar los gastos diarios y saber en qué se va el dinero cada mes, sin hojas de cálculo dispersas.<br>
+<b>Funcionamiento:</b> la API registra gastos (descripción, importe, fecha, categoría), permite consultarlos y filtrarlos, y calcula el total gastado en un periodo.</p>
+<h3>Funcionalidades</h3><ul><li>CRUD de gastos.</li><li>Listar por categoría y entre dos fechas.</li><li>Total gastado en un rango de fechas.</li></ul>
+<h3>Conceptos que se trabajan</h3><p>Estructura de un proyecto Spring Boot, inyección de dependencias por constructor, <code>@Entity</code>, enums con <code>@Enumerated</code>, <code>BigDecimal</code> y <code>LocalDate</code>, <code>JpaRepository</code>, métodos de consulta derivados, capas controller/service/repository, <code>ResponseEntity</code>, <code>application.yml</code>.</p>
+<h3>Al terminar sabrás</h3><p>Crear un proyecto desde cero, conectarlo a MySQL, mapear una tabla a una entidad, exponer un CRUD REST y probar la lógica del servicio de forma aislada.</p>
+<h3>Conocimientos previos</h3><p>POO en Java, colecciones y streams básicos, SQL básico, HTTP/JSON y Postman o curl.</p></div></details>
+
+<details><summary>B. Requisitos funcionales y técnicos</summary><div class="in">
+<h3>Obligatorios</h3><ul class="ck">
+<li><label><input type="checkbox">CRUD completo de gastos.</label></li>
+<li><label><input type="checkbox">Descripción obligatoria, sin ser solo espacios, máximo 100 caracteres.</label></li>
+<li><label><input type="checkbox">Importe mayor que 0, con 2 decimales como máximo, sin usar tipos de coma flotante.</label></li>
+<li><label><input type="checkbox">Fecha obligatoria y no posterior a hoy.</label></li>
+<li><label><input type="checkbox">Categoría obligatoria dentro de una lista cerrada: ALIMENTACION, TRANSPORTE, VIVIENDA, OCIO, SALUD, OTROS.</label></li>
+<li><label><input type="checkbox">Listado filtrado por categoría y por rango de fechas (ambos extremos incluidos).</label></li>
+<li><label><input type="checkbox">Total del rango: suma de importes; si no hay gastos, 0.00.</label></li></ul>
+<h3>Casos límite</h3><ul><li>Id inexistente en consulta, actualización o borrado.</li><li>Rango con «desde» posterior a «hasta», o con fechas mal formadas.</li><li>Categoría que no existe.</li><li>Importe 0, negativo o con más de 2 decimales.</li><li>Gasto cuya fecha es exactamente un extremo del rango.</li></ul>
+<h3>Integridad</h3><p>Ningún campo admite NULL; la base de datos debe rechazar por sí misma importes no positivos y categorías no válidas. Una sola entidad, sin relaciones todavía.</p>
+<h3>Opcionales</h3><ul class="ck"><li><label><input type="checkbox">Orden por fecha descendente.</label></li><li><label><input type="checkbox">Filtro combinado categoría + rango.</label></li><li><label><input type="checkbox">Búsqueda por texto en la descripción, sin distinguir mayúsculas.</label></li><li><label><input type="checkbox">Total por categoría en un rango.</label></li></ul></div></details>
+
+<details><summary>C. Instalación y configuración</summary><div class="in">
+<p>En <b>start.spring.io</b>: Project <b>Maven</b>, Language <b>Java</b>, Packaging <b>Jar</b>, Group <code>com.aprendizaje</code>, Artifact <code>gastos</code>, Package <code>com.aprendizaje.gastos</code>. Elige <b>Java 25</b> (LTS; Spring Boot 4 exige 17 como mínimo, usa 21 si es lo que tienes instalado) y <b>Spring Boot 4.1.x</b>, la última estable (nada de SNAPSHOT ni milestones). La rama 4.0 pierde soporte gratuito a final de 2026, por eso no la usamos en proyectos nuevos.</p>
+<div class="w"><table><tr><th>Dependencia</th><th>Para qué</th></tr>
+<tr><td>Spring Web</td><td>Controladores REST y servidor embebido.</td></tr>
+<tr><td>Spring Data JPA</td><td>JPA/Hibernate y repositorios.</td></tr>
+<tr><td>MySQL Driver</td><td>Conector JDBC para MySQL.</td></tr>
+<tr><td>Spring Boot DevTools (opcional)</td><td>Reinicio rápido al guardar.</td></tr></table></div>
+<p class="mu">El starter de pruebas (JUnit y Mockito) se añade solo. Boot 4 puede traer JUnit Jupiter 6: para lo que usarás (<code>@Test</code>, aserciones) es igual que JUnit 5. Validation se añade en el proyecto 2.</p>
+<pre><code>server:
+  port: 8080
+spring:
+  application:
+    name: gastos
+  datasource:
+    url: jdbc:mysql://localhost:3306/gastos_db?serverTimezone=UTC&amp;allowPublicKeyRetrieval=true&amp;useSSL=false
+    username: root          # mejor un usuario propio con permisos solo sobre gastos_db
+    password: tu_password
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate    # el esquema lo creas tú con el script SQL
+    properties:
+      hibernate:
+        format_sql: true</code></pre></div></details>
+
+<details><summary>D. Diseño de la base de datos</summary><div class="in">
+<p>Una tabla, <code>gasto</code>, sin claves foráneas ni relaciones. Clave primaria autoincremental; todas las columnas NOT NULL; CHECK en importe y categoría; índices en fecha y categoría porque son los criterios de búsqueda.</p>
+<pre><code>CREATE DATABASE IF NOT EXISTS gastos_db
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE gastos_db;
+
+CREATE TABLE gasto (
+  id          BIGINT        NOT NULL AUTO_INCREMENT,
+  descripcion VARCHAR(100)  NOT NULL,
+  importe     DECIMAL(10,2) NOT NULL,
+  fecha       DATE          NOT NULL,
+  categoria   VARCHAR(20)   NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT ck_gasto_importe CHECK (importe &gt; 0),
+  CONSTRAINT ck_gasto_categoria CHECK (categoria IN
+    ('ALIMENTACION','TRANSPORTE','VIVIENDA','OCIO','SALUD','OTROS')),
+  INDEX idx_gasto_fecha (fecha),
+  INDEX idx_gasto_categoria (categoria)
+) ENGINE=InnoDB;
+
+INSERT INTO gasto (descripcion, importe, fecha, categoria) VALUES
+ ('Compra semanal', 54.30, '2026-10-03', 'ALIMENTACION'),
+ ('Abono transporte', 40.00, '2026-10-01', 'TRANSPORTE'),
+ ('Cine', 18.50, '2026-10-10', 'OCIO'),
+ ('Farmacia', 12.75, '2026-10-12', 'SALUD');</code></pre></div></details>
+
+<details><summary>E. Arquitectura y estructura</summary><div class="in">
+<pre><code>gastos/
+├─ pom.xml
+└─ src/
+   ├─ main/
+   │  ├─ java/com/aprendizaje/gastos/
+   │  │  ├─ GastosApplication.java
+   │  │  ├─ controller/GastoController.java
+   │  │  ├─ service/GastoService.java
+   │  │  ├─ repository/GastoRepository.java
+   │  │  └─ entity/
+   │  │     ├─ Gasto.java
+   │  │     └─ Categoria.java
+   │  └─ resources/application.yml
+   └─ test/java/com/aprendizaje/gastos/
+      ├─ GastosApplicationTests.java
+      └─ service/GastoServiceTest.java</code></pre>
+<div class="w"><table><tr><th>Clase</th><th>Paquete</th><th>Responsabilidad</th><th>Relación</th></tr>
+<tr><td>GastosApplication</td><td>raíz</td><td>Punto de arranque: activa la configuración automática y el escaneo de componentes.</td><td>Ninguna directa.</td></tr>
+<tr><td>Categoria</td><td>entity</td><td>Enum con las seis categorías permitidas.</td><td>La usan Gasto, el repository y el controller.</td></tr>
+<tr><td>Gasto</td><td>entity</td><td>Representa una fila de la tabla <code>gasto</code>; es a la vez modelo de dominio y de persistencia.</td><td>La gestionan el repository y el service.</td></tr>
+<tr><td>GastoRepository</td><td>repository</td><td>Acceso a datos de Gasto: operaciones básicas y las consultas por categoría y por rango de fechas.</td><td>Solo la usa el service.</td></tr>
+<tr><td>GastoService</td><td>service</td><td>Reglas de negocio: comprueba los datos, decide cuándo una operación falla y calcula el total del periodo.</td><td>Usa el repository; la usa el controller.</td></tr>
+<tr><td>GastoController</td><td>controller</td><td>Expone los endpoints, traduce HTTP a llamadas al service y elige el código de estado.</td><td>Usa el service; no toca el repository.</td></tr>
+<tr><td>GastoServiceTest</td><td>test.service</td><td>Verifica las reglas del service con el repository simulado.</td><td>Prueba GastoService.</td></tr></table></div></div></details>
+
+<details><summary>F. Diseño de la API REST</summary><div class="in">
+<div class="w"><table><tr><th>Método y ruta</th><th>Descripción</th><th>Entrada</th><th>Éxito</th><th>Errores</th></tr>
+<tr><td>POST /api/gastos</td><td>Crea un gasto</td><td>Body JSON</td><td>201</td><td>400</td></tr>
+<tr><td>GET /api/gastos</td><td>Lista todos</td><td>—</td><td>200</td><td>—</td></tr>
+<tr><td>GET /api/gastos/{id}</td><td>Detalle</td><td>id en la ruta</td><td>200</td><td>404</td></tr>
+<tr><td>PUT /api/gastos/{id}</td><td>Reemplaza un gasto</td><td>id + Body JSON</td><td>200</td><td>400, 404</td></tr>
+<tr><td>DELETE /api/gastos/{id}</td><td>Elimina</td><td>id en la ruta</td><td>204</td><td>404</td></tr>
+<tr><td>GET /api/gastos?categoria=OCIO</td><td>Filtra por categoría</td><td>categoria</td><td>200</td><td>400</td></tr>
+<tr><td>GET /api/gastos?desde=2026-10-01&amp;hasta=2026-10-31</td><td>Filtra por rango (inclusivo)</td><td>desde, hasta (ISO yyyy-MM-dd)</td><td>200</td><td>400</td></tr>
+<tr><td>GET /api/gastos/total?desde=…&amp;hasta=…</td><td>Total del rango</td><td>desde, hasta</td><td>200</td><td>400</td></tr></table></div>
+<pre><code>// POST /api/gastos  — petición
+{ "descripcion": "Cine", "importe": 18.50, "fecha": "2026-10-10", "categoria": "OCIO" }
+
+// 201 Created — respuesta
+{ "id": 3, "descripcion": "Cine", "importe": 18.50, "fecha": "2026-10-10", "categoria": "OCIO" }
+
+// GET /api/gastos/total?desde=2026-10-01&amp;hasta=2026-10-31 — 200
+{ "desde": "2026-10-01", "hasta": "2026-10-31", "total": 125.55 }
+
+// 404 / 400 — formato de error único para toda la API
+{ "status": 400, "error": "Bad Request", "message": "El importe debe ser mayor que 0" }</code></pre></div></details>
+
+<details><summary>G. Validaciones y manejo de errores</summary><div class="in"><ul>
+<li>Obligatoriedad: descripción, importe, fecha y categoría; un body vacío o incompleto es 400.</li>
+<li>Longitud: descripción entre 1 y 100 caracteres tras eliminar espacios sobrantes.</li>
+<li>Valores: importe &gt; 0 y máximo 2 decimales; fecha no futura; categoría dentro del enum.</li>
+<li>Parámetros: fechas en formato ISO; «desde» no posterior a «hasta».</li>
+<li>Recurso inexistente: 404 con mensaje que indique el id buscado.</li>
+<li>Todas las respuestas de error siguen el mismo JSON (status, error, message). Aún no hay manejo global: en este nivel lo resuelves en el propio service/controller y en el nivel 2 lo centralizarás.</li></ul></div></details>
+
+<details><summary>H. Pruebas</summary><div class="in">
+<p>Pruebas de servicio con JUnit y Mockito (repository simulado). Escenarios a cubrir:</p><ul>
+<li>Crear un gasto válido lo guarda y devuelve el gasto con id.</li>
+<li>Importe 0, negativo o con 3 decimales: se rechaza y no se guarda nada.</li>
+<li>Fecha futura y descripción en blanco: se rechazan.</li>
+<li>Buscar, actualizar y eliminar un id inexistente: falla de forma distinguible.</li>
+<li>Rango invertido: se rechaza antes de consultar.</li>
+<li>Total de un rango sin gastos: 0.00; total con varios gastos: suma exacta (por ejemplo 0.10 + 0.20 = 0.30).</li>
+<li>Prueba de arranque (<code>contextLoads</code>) con la base de datos local levantada.</li></ul>
+<p class="mu">Repositorios, controladores e integración llegan en los niveles 2 a 4.</p></div></details>
+
+<details><summary>I. Criterios de finalización</summary><div class="in"><ul class="ck">
+<li><label><input type="checkbox">Todos los endpoints responden con los códigos y el JSON definidos.</label></li>
+<li><label><input type="checkbox">Los casos límite de la sección B se comportan como se describe.</label></li>
+<li><label><input type="checkbox">El controller no contiene reglas de negocio ni accede al repository.</label></li>
+<li><label><input type="checkbox">La entidad coincide con la tabla y la app arranca con <code>ddl-auto: validate</code>.</label></li>
+<li><label><input type="checkbox">Ningún importe pasa por tipos de coma flotante.</label></li>
+<li><label><input type="checkbox">Formato de error único en toda la API.</label></li>
+<li><label><input type="checkbox">Los escenarios de la sección H pasan.</label></li>
+<li><label><input type="checkbox">Nombres claros, sin código muerto ni valores fijos repetidos, sin contraseñas reales en el repositorio.</label></li></ul></div></details></section>
+
+<section id="n2"><h2>2. Biblioteca comunitaria <i class="d" data-n="2"></i><span class="mu" style="font-size:1rem;font-weight:400">Fácil-medio</span></h2>
+<div class="card"><p><b>Problema:</b> una biblioteca de barrio necesita catalogar libros, autores y categorías, y saber qué hay disponible.<br><b>Modelo:</b> Libro N—1 Autor; Libro N—M Categoría.<br><b>Conceptos nuevos:</b> <code>@ManyToOne</code> y <code>@ManyToMany</code>, DTOs de entrada y salida, Bean Validation, consultas con <code>@Query</code>, <code>@RestControllerAdvice</code>, pruebas de repositorio y de controlador.<br><b>Reto:</b> ISBN único, no borrar un autor con libros y no exponer entidades en la API.</p></div>
+<details><summary>A–C. Información, requisitos y configuración</summary><div class="in">
+<h3>A. Información general</h3><p><b>Objetivo:</b> modelar relaciones entre entidades y separar la API del modelo con DTOs. <b>Funcionamiento:</b> catálogo de autores, categorías y libros con búsqueda por título, autor y categoría. <b>Conocimientos previos:</b> proyecto 1. <b>Al terminar sabrás:</b> relaciones JPA, validar entradas, centralizar errores y probar capas por separado.</p>
+<h3>B. Requisitos</h3><ul class="ck">
+<li><label><input type="checkbox">CRUD de autores, categorías y libros.</label></li>
+<li><label><input type="checkbox">ISBN de 13 dígitos, único. Título de 1 a 150 caracteres. Copias &gt;= 0. Año de publicación entre 1450 y el año actual.</label></li>
+<li><label><input type="checkbox">Todo libro tiene un autor existente y al menos una categoría existente.</label></li>
+<li><label><input type="checkbox">Nombre de categoría único sin distinguir mayúsculas.</label></li>
+<li><label><input type="checkbox">No se borra un autor ni una categoría con libros asociados (409).</label></li>
+<li><label><input type="checkbox">Búsqueda de libros por fragmento de título, autor y categoría, combinables.</label></li></ul>
+<p><b>Casos límite:</b> ISBN repetido al crear y al actualizar (el propio libro no cuenta como repetido), autor o categoría inexistentes en el body, lista de categorías vacía o con repetidas. <b>Opcionales:</b> ordenar por título; contar libros por autor.</p>
+<h3>C. Configuración</h3><p>Igual que el proyecto 1 con base de datos <code>biblioteca_db</code> y una dependencia nueva: <b>Validation</b> (Bean Validation para anotar los DTOs).</p></div></details>
+<details><summary>D–E. Base de datos y arquitectura</summary><div class="in">
+<pre><code>CREATE DATABASE IF NOT EXISTS biblioteca_db CHARACTER SET utf8mb4;
+USE biblioteca_db;
+CREATE TABLE autor (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  nacionalidad VARCHAR(50) NULL) ENGINE=InnoDB;
+CREATE TABLE categoria (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(50) NOT NULL UNIQUE) ENGINE=InnoDB;
+CREATE TABLE libro (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  isbn CHAR(13) NOT NULL UNIQUE,
+  titulo VARCHAR(150) NOT NULL,
+  anio_publicacion SMALLINT NOT NULL,
+  copias INT NOT NULL,
+  autor_id BIGINT NOT NULL,
+  CONSTRAINT ck_libro_copias CHECK (copias &gt;= 0),
+  CONSTRAINT ck_libro_anio CHECK (anio_publicacion &gt;= 1450),
+  CONSTRAINT fk_libro_autor FOREIGN KEY (autor_id) REFERENCES autor(id),
+  INDEX idx_libro_titulo (titulo)) ENGINE=InnoDB;
+CREATE TABLE libro_categoria (
+  libro_id BIGINT NOT NULL, categoria_id BIGINT NOT NULL,
+  PRIMARY KEY (libro_id, categoria_id),
+  FOREIGN KEY (libro_id) REFERENCES libro(id),
+  FOREIGN KEY (categoria_id) REFERENCES categoria(id)) ENGINE=InnoDB;
+-- Datos: inserta 3 autores, 4 categorías y 6 libros de ejemplo.</code></pre>
+<p>Cardinalidades: autor 1—N libro; libro N—M categoría (tabla intermedia).</p>
+<pre><code>com.aprendizaje.biblioteca/
+├─ controller/   AutorController, CategoriaController, LibroController
+├─ service/      AutorService, CategoriaService, LibroService
+├─ repository/   AutorRepository, CategoriaRepository, LibroRepository
+├─ entity/       Autor, Categoria, Libro
+├─ dto/          *Request y *Response de cada recurso
+├─ exception/    RecursoNoEncontradoException, ConflictoException,
+│                GlobalExceptionHandler, ErrorResponse
+└─ BibliotecaApplication</code></pre>
+<ul><li><b>entity.*</b>: filas de las tablas; Libro es el lado propietario de la relación con Categoría y la referencia a Autor.</li>
+<li><b>dto.*Request</b>: datos de entrada con sus validaciones. <b>dto.*Response</b>: lo que el cliente ve; nunca incluye entidades.</li>
+<li><b>repository.*</b>: acceso a datos; LibroRepository aporta las búsquedas combinadas y la comprobación de libros por autor y por categoría.</li>
+<li><b>service.*</b>: reglas de negocio, conversión entre entidades y DTOs, lanza las excepciones de dominio.</li>
+<li><b>controller.*</b>: HTTP y validación de entrada; sin lógica de negocio.</li>
+<li><b>exception.*</b>: dos excepciones de dominio (404 y 409), ErrorResponse (formato único de error) y GlobalExceptionHandler, que las traduce a HTTP en un solo lugar.</li></ul></div></details>
+<details><summary>F–I. API, validaciones, pruebas y criterios</summary><div class="in">
+<div class="w"><table><tr><th>Ruta</th><th>Métodos y códigos</th></tr>
+<tr><td>/api/autores, /api/categorias, /api/libros</td><td>POST 201 (400, 409); GET lista 200; GET /{id} 200 (404); PUT /{id} 200 (400, 404, 409); DELETE /{id} 204 (404, 409)</td></tr>
+<tr><td>/api/libros?titulo=&amp;autorId=&amp;categoriaId=</td><td>GET 200; filtros opcionales y combinables</td></tr>
+<tr><td>/api/autores/{id}/libros</td><td>GET 200 (404)</td></tr></table></div>
+<pre><code>// POST /api/libros
+{ "isbn": "9780307474728", "titulo": "Cien años de soledad", "anioPublicacion": 1967,
+  "copias": 3, "autorId": 1, "categoriaIds": [1, 2] }
+// 201
+{ "id": 5, "isbn": "9780307474728", "titulo": "Cien años de soledad", "anioPublicacion": 1967,
+  "copias": 3, "autor": { "id": 1, "nombre": "Gabriel García Márquez" },
+  "categorias": [ { "id": 1, "nombre": "Novela" }, { "id": 2, "nombre": "Clásicos" } ] }
+// 400 con detalle por campo
+{ "status": 400, "error": "Validation failed", "message": "Datos no válidos",
+  "fields": { "isbn": "Debe tener 13 dígitos" } }</code></pre>
+<h3>G. Validaciones</h3><p>En los DTOs: obligatorios, longitudes, patrón del ISBN, mínimos numéricos. En el service: existencia de autor y categorías, unicidad de ISBN y de nombre, borrados con dependencias. Un único <code>GlobalExceptionHandler</code> produce 400 (con detalle por campo), 404 y 409 con el mismo formato.</p>
+<h3>H. Pruebas</h3><ul><li>Servicio (Mockito): crear con ISBN repetido, autor inexistente, categorías vacías; borrar autor con libros.</li><li>Repositorio (<code>@DataJpaTest</code>): búsqueda por título sin distinguir mayúsculas, filtros combinados, comprobación de libros por autor.</li><li>Controlador (<code>@WebMvcTest</code>): cada código HTTP y el JSON de error; body inválido.</li></ul>
+<h3>I. Criterios de finalización</h3><ul class="ck"><li><label><input type="checkbox">Ninguna entidad sale por la API.</label></li><li><label><input type="checkbox">Todos los errores salen del manejador global con el mismo formato.</label></li><li><label><input type="checkbox">Las relaciones coinciden con el esquema y arranca con <code>validate</code>.</label></li><li><label><input type="checkbox">Las pruebas de las tres capas pasan.</label></li><li><label><input type="checkbox">Sin lógica de negocio en controllers ni en DTOs.</label></li></ul></div></details></section>
+
+<section id="n3"><h2>3. Reservas de salas de coworking <i class="d" data-n="3"></i><span class="mu" style="font-size:1rem;font-weight:400">Medio</span></h2>
+<div class="card"><p><b>Problema:</b> reservar salas por franjas horarias sin que dos reservas se pisen.<br><b>Modelo:</b> Sala 1—N Reserva N—1 Miembro, con tarifa y cuota mensual de horas.<br><b>Conceptos nuevos:</b> JPQL, paginación y ordenación (<code>Pageable</code>), <code>@Transactional</code>, mappers propios, lógica con varias operaciones.<br><b>Reto:</b> detectar solapamientos, cancelar con política de antelación y respetar la cuota.</p></div>
+<details><summary>A–C. Información, requisitos y configuración</summary><div class="in">
+<h3>A. Información general</h3><p><b>Objetivo:</b> programar reglas de negocio con varias operaciones dentro de una transacción y consultar con paginación. <b>Funcionamiento:</b> los miembros reservan salas por franjas; el sistema impide solapamientos, calcula el precio y controla la cuota mensual. <b>Previos:</b> proyectos 1 y 2. <b>Aprenderás:</b> JPQL, <code>Pageable</code>, <code>@Transactional</code> y mappers.</p>
+<h3>B. Requisitos</h3><ul class="ck">
+<li><label><input type="checkbox">CRUD de salas y miembros; una sala se desactiva en lugar de borrarse si tiene reservas.</label></li>
+<li><label><input type="checkbox">Reserva: mismo día, entre 08:00 y 20:00, inicio y fin en hora o media hora, duración de 1 a 4 horas.</label></li>
+<li><label><input type="checkbox">Dos reservas CONFIRMADAS de la misma sala no pueden solaparse; que una termine cuando empieza otra no es solapamiento.</label></li>
+<li><label><input type="checkbox">Sala inactiva no reservable; la reserva debe ser futura.</label></li>
+<li><label><input type="checkbox">Precio total = horas x precio por hora de la sala en ese momento; no cambia si la tarifa cambia después.</label></li>
+<li><label><input type="checkbox">Cuota: las horas CONFIRMADAS del miembro en el mes de la reserva más las nuevas no superan sus horas mensuales.</label></li>
+<li><label><input type="checkbox">Cancelar solo con al menos 24 horas de antelación; la reserva pasa a CANCELADA y libera la franja y la cuota.</label></li>
+<li><label><input type="checkbox">Listado de reservas paginado, ordenable y filtrable.</label></li></ul>
+<p><b>Casos límite:</b> cancelar a 23 h 59 min y a 24 h exactas; reserva que cruza de mes; misma franja en salas distintas; reservar tras cancelar la misma franja. <b>Opcionales:</b> disponibilidad diaria de una sala; informe de horas por miembro.</p>
+<h3>C. Configuración</h3><p>Igual que el proyecto 2 con base de datos <code>coworking_db</code>; sin dependencias nuevas.</p></div></details>
+<details><summary>D–E. Base de datos y arquitectura</summary><div class="in">
+<pre><code>CREATE DATABASE IF NOT EXISTS coworking_db CHARACTER SET utf8mb4;
+USE coworking_db;
+CREATE TABLE sala (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(60) NOT NULL UNIQUE,
+  capacidad INT NOT NULL,
+  precio_hora DECIMAL(8,2) NOT NULL,
+  activa BOOLEAN NOT NULL DEFAULT TRUE,
+  CHECK (capacidad &gt; 0), CHECK (precio_hora &gt; 0)) ENGINE=InnoDB;
+CREATE TABLE miembro (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  email VARCHAR(120) NOT NULL UNIQUE,
+  horas_mensuales INT NOT NULL DEFAULT 20,
+  CHECK (horas_mensuales &gt;= 0)) ENGINE=InnoDB;
+CREATE TABLE reserva (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  sala_id BIGINT NOT NULL,
+  miembro_id BIGINT NOT NULL,
+  inicio DATETIME NOT NULL,
+  fin DATETIME NOT NULL,
+  estado VARCHAR(12) NOT NULL,
+  precio_total DECIMAL(10,2) NOT NULL,
+  CHECK (fin &gt; inicio),
+  CHECK (estado IN ('CONFIRMADA','CANCELADA')),
+  FOREIGN KEY (sala_id) REFERENCES sala(id),
+  FOREIGN KEY (miembro_id) REFERENCES miembro(id),
+  INDEX idx_reserva_sala_franja (sala_id, inicio, fin),
+  INDEX idx_reserva_miembro (miembro_id, inicio)) ENGINE=InnoDB;
+-- Datos: 3 salas, 3 miembros y algunas reservas CONFIRMADAS y CANCELADAS.</code></pre>
+<p>Cardinalidades: sala 1—N reserva; miembro 1—N reserva.</p>
+<pre><code>com.aprendizaje.coworking/
+├─ controller/  SalaController, MiembroController, ReservaController
+├─ service/     SalaService, MiembroService, ReservaService
+├─ repository/  SalaRepository, MiembroRepository, ReservaRepository
+├─ entity/      Sala, Miembro, Reserva, EstadoReserva
+├─ dto/         requests y responses (reserva incluye datos de sala y miembro)
+├─ mapper/      SalaMapper, MiembroMapper, ReservaMapper
+└─ exception/   excepciones de dominio + GlobalExceptionHandler</code></pre>
+<ul><li><b>ReservaService</b>: orquesta cada alta y cancelación como una única operación transaccional y concentra todas las reglas de la sección B.</li>
+<li><b>ReservaRepository</b>: consultas JPQL de solapamiento, de horas consumidas por miembro y mes, y de listado paginado con filtros.</li>
+<li><b>mapper.*</b>: convierten entre entidad y DTO; el service no construye DTOs a mano.</li>
+<li><b>EstadoReserva</b>: enum de estados. El resto de clases mantienen las responsabilidades del nivel 2.</li></ul></div></details>
+<details><summary>F–I. API, validaciones, pruebas y criterios</summary><div class="in">
+<div class="w"><table><tr><th>Método y ruta</th><th>Descripción</th><th>Códigos</th></tr>
+<tr><td>CRUD /api/salas y /api/miembros</td><td>Como en el nivel 2; DELETE de sala con reservas responde 409</td><td>201, 200, 204, 400, 404, 409</td></tr>
+<tr><td>POST /api/reservas</td><td>Crea reserva (salaId, miembroId, inicio, fin)</td><td>201; 400, 404, 409</td></tr>
+<tr><td>GET /api/reservas/{id}</td><td>Detalle</td><td>200; 404</td></tr>
+<tr><td>GET /api/reservas?salaId&amp;miembroId&amp;estado&amp;page&amp;size&amp;sort</td><td>Listado paginado</td><td>200; 400</td></tr>
+<tr><td>PATCH /api/reservas/{id}/cancelar</td><td>Cancela</td><td>200; 404, 409</td></tr>
+<tr><td>GET /api/salas/{id}/disponibilidad?fecha=</td><td>Franjas libres del día (opcional)</td><td>200; 404</td></tr></table></div>
+<pre><code>// POST /api/reservas
+{ "salaId": 2, "miembroId": 7, "inicio": "2026-11-10T10:00:00", "fin": "2026-11-10T12:30:00" }
+// 201
+{ "id": 41, "sala": "Sala Olmo", "miembro": "Ana Ruiz", "inicio": "2026-11-10T10:00:00",
+  "fin": "2026-11-10T12:30:00", "estado": "CONFIRMADA", "precioTotal": 37.50 }
+// GET /api/reservas?page=0&amp;size=5&amp;sort=inicio,desc
+{ "content": [ ... ], "page": 0, "size": 5, "totalElements": 12, "totalPages": 3 }
+// 409
+{ "status": 409, "error": "Conflict", "message": "La sala ya está reservada en esa franja" }</code></pre>
+<h3>G. Validaciones</h3><p>Formato y obligatoriedad en DTOs; reglas de horario, duración, antelación, solapamiento y cuota en el service (409 para conflictos, 400 para datos mal formados). Parámetros de paginación fuera de rango o campos de orden inexistentes: 400.</p>
+<h3>H. Pruebas</h3><ul><li>Servicio: solapamiento con bordes (termina cuando empieza otra, contiene, queda contenida), cuota justo en el límite y superada, cancelación a 23 h 59 y a 24 h, sala inactiva.</li><li>Repositorio: la consulta de solapamiento ignora reservas CANCELADAS; suma de horas por mes; paginación y orden.</li><li>Transacción: si falla una regla, no queda ninguna reserva guardada.</li><li>Controlador: códigos, JSON paginado y errores.</li></ul>
+<h3>I. Criterios de finalización</h3><ul class="ck"><li><label><input type="checkbox">Imposible crear solapamientos por la API.</label></li><li><label><input type="checkbox">Precio y cuota correctos en los casos límite.</label></li><li><label><input type="checkbox">Los listados son paginados y no cargan toda la tabla.</label></li><li><label><input type="checkbox">Reglas solo en el service; mappers separados.</label></li><li><label><input type="checkbox">Pruebas de servicio, repositorio y controlador pasan.</label></li></ul></div></details></section>
+
+<section id="n4"><h2>4. Pedidos y stock de una tienda online <i class="d" data-n="4"></i><span class="mu" style="font-size:1rem;font-weight:400">Medio-avanzado</span></h2>
+<div class="card"><p><b>Problema:</b> gestionar pedidos con varias líneas y mantener el stock coherente.<br><b>Modelo:</b> Cliente 1—N Pedido 1—N LineaPedido N—1 Producto, más MovimientoStock.<br><b>Conceptos nuevos:</b> máquina de estados (BORRADOR, CONFIRMADO, ENVIADO, ENTREGADO, CANCELADO), transacciones entre entidades, problema N+1 con <code>JOIN FETCH</code> y <code>@EntityGraph</code>, proyecciones, pruebas de integración con <code>@SpringBootTest</code>.<br><b>Reto:</b> confirmar un pedido descuenta stock de forma atómica y cancelarlo lo repone.</p></div>
+<details><summary>A–C. Información, requisitos y configuración</summary><div class="in">
+<h3>A. Información general</h3><p><b>Objetivo:</b> gestionar un proceso de negocio con estados y varias entidades, y detectar y evitar problemas de rendimiento. <b>Funcionamiento:</b> un cliente crea un pedido en borrador, añade líneas y lo confirma; al confirmar se descuenta el stock; el pedido avanza hasta la entrega o se cancela. <b>Previos:</b> proyectos 1 a 3. <b>Aprenderás:</b> transacciones entre entidades, N+1, proyecciones y pruebas de integración.</p>
+<h3>B. Requisitos</h3><ul class="ck">
+<li><label><input type="checkbox">CRUD de clientes y productos; un producto con histórico se desactiva en lugar de borrarse.</label></li>
+<li><label><input type="checkbox">Estados: BORRADOR, CONFIRMADO, ENVIADO, ENTREGADO, CANCELADO. Transiciones permitidas: BORRADOR a CONFIRMADO o CANCELADO; CONFIRMADO a ENVIADO o CANCELADO; ENVIADO a ENTREGADO. Cualquier otra, 409.</label></li>
+<li><label><input type="checkbox">Solo se añaden o quitan líneas en BORRADOR; un producto aparece una sola vez por pedido (sumar cantidad si se repite).</label></li>
+<li><label><input type="checkbox">Confirmar: pedido no vacío, productos activos y stock suficiente en todas las líneas; descuenta el stock, registra un movimiento por línea y fija precios y total. Si una línea falla, no cambia nada.</label></li>
+<li><label><input type="checkbox">Cancelar un CONFIRMADO repone el stock y registra los movimientos inversos.</label></li>
+<li><label><input type="checkbox">Reposición manual de stock con movimiento asociado.</label></li>
+<li><label><input type="checkbox">Listados paginados de pedidos con cliente y líneas, sin consultas por cada pedido.</label></li></ul>
+<p><b>Casos límite:</b> dos líneas que juntas superan el stock; reconfirmar; cancelar un ENVIADO; borrar un cliente con pedidos. <b>Opcionales:</b> productos con stock bajo; resumen de cliente (nº de pedidos y total gastado).</p>
+<h3>C. Configuración</h3><p>Dos bases de datos: <code>tienda_db</code> para desarrollo y <code>tienda_test_db</code> para pruebas de integración (con su propio <code>application-test.yml</code>). Sin dependencias nuevas.</p></div></details>
+<details><summary>D–E. Base de datos y arquitectura</summary><div class="in">
+<pre><code>CREATE DATABASE IF NOT EXISTS tienda_db CHARACTER SET utf8mb4;
+USE tienda_db;
+CREATE TABLE cliente (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  email VARCHAR(120) NOT NULL UNIQUE,
+  direccion VARCHAR(200) NOT NULL) ENGINE=InnoDB;
+CREATE TABLE producto (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  sku VARCHAR(20) NOT NULL UNIQUE,
+  nombre VARCHAR(120) NOT NULL,
+  precio DECIMAL(10,2) NOT NULL,
+  stock INT NOT NULL DEFAULT 0,
+  activo BOOLEAN NOT NULL DEFAULT TRUE,
+  CHECK (precio &gt; 0), CHECK (stock &gt;= 0)) ENGINE=InnoDB;
+CREATE TABLE pedido (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  cliente_id BIGINT NOT NULL,
+  estado VARCHAR(12) NOT NULL,
+  fecha_creacion DATETIME NOT NULL,
+  total DECIMAL(12,2) NOT NULL DEFAULT 0,
+  CHECK (estado IN ('BORRADOR','CONFIRMADO','ENVIADO','ENTREGADO','CANCELADO')),
+  FOREIGN KEY (cliente_id) REFERENCES cliente(id),
+  INDEX idx_pedido_cliente_estado (cliente_id, estado)) ENGINE=InnoDB;
+CREATE TABLE linea_pedido (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  pedido_id BIGINT NOT NULL,
+  producto_id BIGINT NOT NULL,
+  cantidad INT NOT NULL,
+  precio_unitario DECIMAL(10,2) NOT NULL,
+  CHECK (cantidad &gt; 0),
+  UNIQUE (pedido_id, producto_id),
+  FOREIGN KEY (pedido_id) REFERENCES pedido(id),
+  FOREIGN KEY (producto_id) REFERENCES producto(id)) ENGINE=InnoDB;
+CREATE TABLE movimiento_stock (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  producto_id BIGINT NOT NULL,
+  pedido_id BIGINT NULL,
+  cantidad INT NOT NULL,
+  tipo VARCHAR(12) NOT NULL,
+  fecha DATETIME NOT NULL,
+  CHECK (cantidad &lt;&gt; 0),
+  CHECK (tipo IN ('VENTA','REPOSICION','CANCELACION')),
+  FOREIGN KEY (producto_id) REFERENCES producto(id),
+  FOREIGN KEY (pedido_id) REFERENCES pedido(id)) ENGINE=InnoDB;
+-- Datos: 3 clientes, 8 productos con stock variado, 2 pedidos de ejemplo.</code></pre>
+<p>Cardinalidades: cliente 1—N pedido; pedido 1—N línea; producto 1—N línea; producto 1—N movimiento; pedido 1—N movimiento (opcional). Los precios de la línea se copian del producto para conservar el histórico.</p>
+<pre><code>com.aprendizaje.tienda/
+├─ controller/  ClienteController, ProductoController, PedidoController
+├─ service/     ClienteService, ProductoService, PedidoService, StockService
+├─ repository/  Cliente, Producto, Pedido, MovimientoStock (un repository cada uno)
+├─ entity/      Cliente, Producto, Pedido, LineaPedido, MovimientoStock,
+│                EstadoPedido, TipoMovimiento
+├─ dto/         requests, responses y proyecciones (ResumenCliente)
+├─ mapper/      un mapper por recurso
+└─ exception/   TransicionInvalidaException, StockInsuficienteException, + las anteriores</code></pre>
+<ul><li><b>PedidoService</b>: ciclo de vida del pedido y las transiciones de estado; delega en StockService.</li>
+<li><b>StockService</b>: único punto que modifica stock y registra movimientos; así la regla vive en un solo sitio.</li>
+<li><b>EstadoPedido</b>: estados y qué transiciones admite cada uno.</li>
+<li><b>PedidoRepository</b>: consultas que traen pedido, cliente y líneas en pocas sentencias, y el listado paginado.</li>
+<li><b>dto.ResumenCliente</b>: proyección de solo lectura para el informe.</li></ul></div></details>
+<details><summary>F–I. API, validaciones, pruebas y criterios</summary><div class="in">
+<div class="w"><table><tr><th>Método y ruta</th><th>Descripción</th><th>Códigos</th></tr>
+<tr><td>CRUD /api/clientes, /api/productos</td><td>Como niveles anteriores</td><td>201, 200, 204, 400, 404, 409</td></tr>
+<tr><td>POST /api/productos/{id}/reposicion</td><td>Body: cantidad &gt; 0</td><td>200; 400, 404</td></tr>
+<tr><td>POST /api/pedidos</td><td>Crea borrador (clienteId)</td><td>201; 404</td></tr>
+<tr><td>POST /api/pedidos/{id}/lineas</td><td>Añade producto y cantidad</td><td>201; 400, 404, 409</td></tr>
+<tr><td>DELETE /api/pedidos/{id}/lineas/{lineaId}</td><td>Quita línea</td><td>204; 404, 409</td></tr>
+<tr><td>POST /api/pedidos/{id}/confirmar | enviar | entregar | cancelar</td><td>Transiciones de estado</td><td>200; 404, 409</td></tr>
+<tr><td>GET /api/pedidos/{id}</td><td>Pedido con cliente y líneas</td><td>200; 404</td></tr>
+<tr><td>GET /api/pedidos?clienteId&amp;estado&amp;page&amp;size</td><td>Listado paginado</td><td>200; 400</td></tr>
+<tr><td>GET /api/clientes/{id}/resumen</td><td>Opcional: proyección</td><td>200; 404</td></tr></table></div>
+<pre><code>// POST /api/pedidos/12/lineas
+{ "productoId": 4, "cantidad": 2 }
+// POST /api/pedidos/12/confirmar — 200
+{ "id": 12, "estado": "CONFIRMADO", "cliente": "Marta Gil", "total": 83.40,
+  "lineas": [ { "producto": "Taza", "cantidad": 2, "precioUnitario": 9.20 } ] }
+// 409
+{ "status": 409, "error": "Conflict", "message": "Stock insuficiente para el producto SKU-004" }</code></pre>
+<h3>G. Validaciones</h3><p>DTOs: cantidades positivas, identificadores obligatorios, SKU con formato. Service: transiciones válidas (409), stock, producto activo, pedido editable, pedido no vacío. Paginación con límites máximos.</p>
+<h3>H. Pruebas</h3><ul><li>Servicio: cada transición válida e inválida; confirmar con stock justo y con una línea sin stock; cancelar repone.</li><li>Integración (<code>@SpringBootTest</code> + <code>tienda_test_db</code>): si falla la última línea al confirmar, el stock de las anteriores queda intacto y no hay movimientos.</li><li>Rendimiento: listar 20 pedidos con líneas ejecuta un número de sentencias constante, no proporcional a los pedidos (compruébalo con el log SQL).</li><li>Controlador: errores 409 y paginación.</li></ul>
+<h3>I. Criterios de finalización</h3><ul class="ck"><li><label><input type="checkbox">Confirmar y cancelar son atómicos y dejan el stock coherente con los movimientos.</label></li><li><label><input type="checkbox">Ninguna transición inválida es posible.</label></li><li><label><input type="checkbox">Has medido y eliminado el N+1 del listado.</label></li><li><label><input type="checkbox">Stock modificado solo desde StockService.</label></li><li><label><input type="checkbox">Pruebas unitarias e integración pasan con una base de datos de pruebas separada.</label></li></ul></div></details></section>
+
+<section id="n5"><h2>5. Venta de entradas con aforo limitado <i class="d" data-n="5"></i><span class="mu" style="font-size:1rem;font-weight:400">Avanzado</span></h2>
+<div class="card"><p><b>Problema:</b> vender entradas de eventos sin sobrepasar nunca el aforo, aunque haya compras simultáneas.<br><b>Modelo:</b> Evento 1—N Zona 1—N Entrada N—1 Compra N—1 Cliente, más ListaEspera.<br><b>Conceptos nuevos:</b> bloqueo optimista (<code>@Version</code>) y pesimista, reservas temporales con caducidad (<code>@Scheduled</code>), aislamiento de transacciones, índices y operaciones por lotes, pruebas de concurrencia, refactorización.<br><b>Reto:</b> consistencia bajo carga y rendimiento medible.</p></div>
+<details><summary>A–C. Información, requisitos y configuración</summary><div class="in">
+<h3>A. Información general</h3><p><b>Objetivo:</b> garantizar consistencia cuando varias peticiones compiten por el mismo recurso, y diseñar con calidad un dominio extenso. <b>Funcionamiento:</b> los clientes reservan entradas de una zona; la reserva es temporal y caduca si no se paga; al liberarse plazas se avisa a la lista de espera. <b>Previos:</b> proyectos 1 a 4. <b>Aprenderás:</b> bloqueo optimista y pesimista, niveles de aislamiento, tareas programadas, operaciones por lotes, pruebas de concurrencia y refactorización.</p>
+<h3>B. Requisitos</h3><ul class="ck">
+<li><label><input type="checkbox">Eventos con estados BORRADOR, PUBLICADO, AGOTADO y CANCELADO; solo los PUBLICADOS admiten compras. Zonas con aforo y precio propios.</label></li>
+<li><label><input type="checkbox">Reservar: de 1 a 6 entradas de una zona; crea una compra PENDIENTE que expira a los 10 minutos y ya cuenta contra el aforo.</label></li>
+<li><label><input type="checkbox">Nunca se venden ni reservan más entradas que el aforo, ni con peticiones simultáneas.</label></li>
+<li><label><input type="checkbox">Pagar (simulado, sin pasarela): solo una compra PENDIENTE no caducada pasa a PAGADA y genera los códigos de entrada, únicos.</label></li>
+<li><label><input type="checkbox">Tarea programada: las compras PENDIENTES vencidas pasan a CADUCADA y liberan plazas.</label></li>
+<li><label><input type="checkbox">Cancelar una compra PAGADA con al menos 48 horas de antelación libera las plazas.</label></li>
+<li><label><input type="checkbox">Lista de espera por zona: al liberarse plazas se marca como NOTIFICADA a quien le toque por orden de llegada y le quepa su cantidad (sin envío real de mensajes).</label></li>
+<li><label><input type="checkbox">Informe de ocupación por evento y zona sin consultar fila a fila.</label></li></ul>
+<p><b>Casos límite:</b> pagar justo al vencer; dos clientes por las últimas plazas; liberación que atiende a varios de la lista; evento que se cancela con compras vivas (todas se cancelan). <b>Opcional:</b> compras de un cliente con filtros y paginación.</p>
+<h3>C. Configuración</h3><p>Como el proyecto 4 con <code>entradas_db</code> y <code>entradas_test_db</code>; la tarea programada se activa con la anotación de scheduling de Spring (ya incluida en el framework). Un pool de conexiones adecuado para las pruebas de concurrencia (propiedades de Hikari en el yml).</p></div></details>
+<details><summary>D–E. Base de datos y arquitectura</summary><div class="in">
+<pre><code>CREATE DATABASE IF NOT EXISTS entradas_db CHARACTER SET utf8mb4;
+USE entradas_db;
+CREATE TABLE cliente (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  email VARCHAR(120) NOT NULL UNIQUE) ENGINE=InnoDB;
+CREATE TABLE evento (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  fecha_hora DATETIME NOT NULL,
+  estado VARCHAR(12) NOT NULL,
+  CHECK (estado IN ('BORRADOR','PUBLICADO','AGOTADO','CANCELADO')),
+  INDEX idx_evento_estado_fecha (estado, fecha_hora)) ENGINE=InnoDB;
+CREATE TABLE zona (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  evento_id BIGINT NOT NULL,
+  nombre VARCHAR(50) NOT NULL,
+  aforo INT NOT NULL,
+  ocupadas INT NOT NULL DEFAULT 0,
+  precio DECIMAL(8,2) NOT NULL,
+  version BIGINT NOT NULL DEFAULT 0,
+  CHECK (aforo &gt; 0), CHECK (ocupadas &gt;= 0 AND ocupadas &lt;= aforo), CHECK (precio &gt;= 0),
+  UNIQUE (evento_id, nombre),
+  FOREIGN KEY (evento_id) REFERENCES evento(id)) ENGINE=InnoDB;
+CREATE TABLE compra (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  cliente_id BIGINT NOT NULL,
+  zona_id BIGINT NOT NULL,
+  cantidad INT NOT NULL,
+  estado VARCHAR(12) NOT NULL,
+  creada_en DATETIME NOT NULL,
+  expira_en DATETIME NOT NULL,
+  total DECIMAL(10,2) NOT NULL,
+  CHECK (cantidad BETWEEN 1 AND 6),
+  CHECK (estado IN ('PENDIENTE','PAGADA','CADUCADA','CANCELADA')),
+  FOREIGN KEY (cliente_id) REFERENCES cliente(id),
+  FOREIGN KEY (zona_id) REFERENCES zona(id),
+  INDEX idx_compra_estado_expira (estado, expira_en)) ENGINE=InnoDB;
+CREATE TABLE entrada (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  compra_id BIGINT NOT NULL,
+  codigo CHAR(12) NOT NULL UNIQUE,
+  FOREIGN KEY (compra_id) REFERENCES compra(id)) ENGINE=InnoDB;
+CREATE TABLE lista_espera (
+  id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  zona_id BIGINT NOT NULL,
+  cliente_id BIGINT NOT NULL,
+  cantidad INT NOT NULL,
+  estado VARCHAR(12) NOT NULL DEFAULT 'ACTIVA',
+  creada_en DATETIME NOT NULL,
+  CHECK (cantidad BETWEEN 1 AND 6),
+  CHECK (estado IN ('ACTIVA','NOTIFICADA','CANCELADA')),
+  FOREIGN KEY (zona_id) REFERENCES zona(id),
+  FOREIGN KEY (cliente_id) REFERENCES cliente(id),
+  INDEX idx_espera_zona_estado (zona_id, estado, creada_en)) ENGINE=InnoDB;
+-- Datos: 2 eventos, 3 zonas (una con aforo 5 para las pruebas) y 4 clientes.</code></pre>
+<p>Cardinalidades: evento 1—N zona; zona 1—N compra; cliente 1—N compra; compra 1—N entrada; zona 1—N lista de espera; cliente 1—N lista de espera. El contador <code>ocupadas</code> de zona es el punto de contención: decide tú cómo protegerlo y justifícalo.</p>
+<pre><code>com.aprendizaje.entradas/
+├─ controller/  Evento, Zona, Compra, ListaEspera, Informe
+├─ service/     EventoService, CompraService, DisponibilidadService,
+│                ListaEsperaService, InformeService
+├─ scheduler/   CaducidadCompraJob
+├─ repository/  uno por entidad
+├─ entity/      Evento, Zona, Cliente, Compra, Entrada, ListaEspera + enums
+├─ dto/         requests, responses, proyecciones de informe
+├─ mapper/
+├─ config/      configuración de scheduling y de transacciones
+└─ exception/   conflicto de concurrencia, aforo agotado, compra caducada, etc.</code></pre>
+<ul><li><b>DisponibilidadService</b>: única autoridad para reservar y liberar plazas de una zona; el resto de servicios lo usan.</li>
+<li><b>CompraService</b>: reservar, pagar y cancelar compras; define las fronteras transaccionales.</li>
+<li><b>CaducidadCompraJob</b>: dispara periódicamente la caducidad y delega en el service; no contiene lógica.</li>
+<li><b>ListaEsperaService</b>: decide a quién avisar cuando se liberan plazas, por orden de llegada.</li>
+<li><b>InformeService / proyecciones</b>: ocupación agregada con consultas de solo lectura optimizadas.</li></ul></div></details>
+<details><summary>F–I. API, validaciones, pruebas y criterios</summary><div class="in">
+<div class="w"><table><tr><th>Método y ruta</th><th>Descripción</th><th>Códigos</th></tr>
+<tr><td>CRUD /api/clientes, /api/eventos, /api/eventos/{id}/zonas</td><td>Gestión básica</td><td>201, 200, 204, 400, 404, 409</td></tr>
+<tr><td>POST /api/eventos/{id}/publicar | cancelar</td><td>Cambia el estado del evento</td><td>200; 404, 409</td></tr>
+<tr><td>GET /api/eventos?estado&amp;page&amp;size</td><td>Eventos paginados</td><td>200</td></tr>
+<tr><td>GET /api/zonas/{id}/disponibilidad</td><td>Plazas libres</td><td>200; 404</td></tr>
+<tr><td>POST /api/compras</td><td>Reserva (clienteId, zonaId, cantidad)</td><td>201; 400, 404, 409</td></tr>
+<tr><td>POST /api/compras/{id}/pagar</td><td>Paga y emite entradas</td><td>200; 404, 409, 410 si caducó</td></tr>
+<tr><td>POST /api/compras/{id}/cancelar</td><td>Cancela compra pagada</td><td>200; 404, 409</td></tr>
+<tr><td>GET /api/compras/{id}</td><td>Detalle con entradas</td><td>200; 404</td></tr>
+<tr><td>POST /api/zonas/{id}/lista-espera</td><td>Apuntarse (clienteId, cantidad)</td><td>201; 400, 404, 409</td></tr>
+<tr><td>GET /api/informes/ocupacion?eventoId=</td><td>Ocupación por zona</td><td>200; 404</td></tr></table></div>
+<pre><code>// POST /api/compras
+{ "clienteId": 3, "zonaId": 2, "cantidad": 4 }
+// 201
+{ "id": 88, "estado": "PENDIENTE", "cantidad": 4, "total": 120.00,
+  "expiraEn": "2026-11-01T18:10:00" }
+// POST /api/compras/88/pagar — 200
+{ "id": 88, "estado": "PAGADA", "entradas": [ { "codigo": "K7M2QX9TB4AD" } ] }
+// 409
+{ "status": 409, "error": "Conflict", "message": "No quedan plazas suficientes en la zona" }</code></pre>
+<h3>G. Validaciones</h3><p>Cantidad de 1 a 6; estados válidos para cada operación; compra caducada (410) frente a no encontrada (404); conflicto por concurrencia con mensaje claro y decisión explícita sobre si el cliente debe reintentar. Mismo formato de error global.</p>
+<h3>H. Pruebas</h3><ul><li>Concurrencia (<code>ExecutorService</code>): 50 hilos compitiendo por las 5 últimas plazas; resultado exacto, ocupadas igual al aforo, nunca superior. Repite varias veces.</li><li>Caducidad: compras vencidas liberan plazas; no se paga una compra caducada.</li><li>Lista de espera: orden de llegada, cantidades que no caben, varias liberaciones.</li><li>Servicio y repositorio: transiciones, cancelación a 47 h y 48 h, informe.</li><li>Rendimiento: informe y disponibilidad con un número de sentencias constante; inserción de entradas por lotes.</li></ul>
+<h3>I. Criterios de finalización</h3><ul class="ck"><li><label><input type="checkbox">La prueba de concurrencia pasa de forma estable.</label></li><li><label><input type="checkbox">La estrategia de bloqueo está elegida y justificada por escrito.</label></li><li><label><input type="checkbox">Fronteras transaccionales claras; el job no contiene lógica.</label></li><li><label><input type="checkbox">Informes sin N+1 y con índices útiles.</label></li><li><label><input type="checkbox">Has refactorizado al menos un servicio largo y puedes explicar el motivo.</label></li><li><label><input type="checkbox">Revisión final: arquitectura, SOLID y cobertura de lo crítico.</label></li></ul></div></details>
+</section>
+</main></div>
+<script>
+document.querySelectorAll('.d').forEach(function(e){var n=+e.dataset.n;e.setAttribute('role','img');e.setAttribute('aria-label','Dificultad '+n+' de 5');for(var i=0;i<5;i++){var b=document.createElement('b');if(i<n)b.className='on';e.appendChild(b)}});
+</script></body></html>
