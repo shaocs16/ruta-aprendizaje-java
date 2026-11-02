@@ -1,0 +1,14 @@
+server:
+  port: ${SERVER_PORT:8081}
+spring:
+  application:
+    name: gasto_exagonal
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/gasto_exagonal_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    show-sql: false
+    hibernate:
+      ddl-auto: validate

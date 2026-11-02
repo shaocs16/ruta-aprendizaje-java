@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Guía del proyecto gasto_exagonal: capas, puertos, adaptadores y procesos de la API de gastos.">
+  <title>Gasto exagonal · Guía de arquitectura hexagonal</title>
+  <style>
+    :root { color-scheme: light; --ink: #17283e; --muted: #506078; --line: #d7e0eb; --bg: #f3f6fb; --blue: #174ca4; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 1rem; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.7 system-ui, sans-serif; }
+    header { background: #10233f; color: white; padding: 3rem max(1.5rem, calc((100vw - 1180px)/2)); }
+    header p { max-width: 800px; color: #d2e1f7; }
+    h1 { font-size: clamp(2rem, 5vw, 3.3rem); line-height: 1.15; margin: .6rem 0 1rem; }
+    h2 { font-size: 1.65rem; line-height: 1.3; margin-top: 0; }
+    h3 { margin-top: 1.8rem; line-height: 1.4; }
+    a { color: var(--blue); text-underline-offset: .2em; }
+    header a { color: #b9d8ff; }
+    .tag { text-transform: uppercase; letter-spacing: .14em; font-size: .8rem; font-weight: 700; }
+    .layout { max-width: 1220px; margin: 2rem auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 2rem; padding: 0 1.2rem; }
+    nav { position: sticky; top: 1rem; align-self: start; }
+    nav a { display: block; padding: .45rem .7rem; border-radius: .4rem; text-decoration: none; }
+    nav a:hover, nav a:focus-visible { background: #dfe9f8; }
+    section { background: white; border: 1px solid var(--line); border-radius: 12px; padding: 1.8rem; margin-bottom: 1.5rem; }
+    p, li { overflow-wrap: anywhere; }
+    code { font-family: ui-monospace, Consolas, monospace; font-size: .9em; background: #edf2f8; padding: .12em .3em; border-radius: .25rem; overflow-wrap: anywhere; }
+    pre { background: #12243b; color: #e4efff; padding: 1.2rem; border-radius: .5rem; overflow-x: auto; line-height: 1.6; }
+    pre code { background: none; padding: 0; color: inherit; overflow-wrap: normal; }
+    .table { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; font-size: .94rem; }
+    th, td { padding: .75rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eef3fa; }
+    .note { border-left: 4px solid #3475ce; background: #edf4ff; padding: 1rem; margin: 1.2rem 0; }
+    .warning { border-left-color: #b97713; background: #fff7e6; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: 1.5rem 0; }
+    .box { padding: .8rem; border: 1px solid #bdd0eb; border-radius: .5rem; background: #edf4ff; text-align: center; flex: 1 1 140px; }
+    .domain { background: #e9f6ec; border-color: #a7cfb1; }
+    .caption { color: var(--muted); font-size: .92rem; }
+    footer { text-align: center; padding: 1rem 1rem 3rem; color: var(--muted); }
+    a:focus-visible { outline: 3px solid #b97713; outline-offset: 3px; }
+    @media (max-width: 850px) { .layout { grid-template-columns: 1fr; gap: 1rem; } nav { position: static; } nav a { display: inline-block; } section { padding: 1.2rem; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print { body { background: white; } .layout { display: block; } nav { display: none; } header { background: white; color: black; padding: 1rem; } header p { color: black; } section { break-inside: auto; border: 0; padding: 1rem 0; } pre { white-space: pre-wrap; background: #eee; color: black; } }
+  </style>
+</head>
+<body>
+<header>
+  <div class="tag">Java 21 · Spring Boot · Puertos y adaptadores</div>
+  <h1>Un núcleo de negocio.<br>Tecnologías por fuera.</h1>
+  <p>Guía de <strong>gasto_exagonal</strong>, un proyecto independiente construido a partir de <code>gastos</code>. Explica qué contiene cada capa, cómo se conectan y qué sucede en cada operación.</p>
+  <a href="README.md">Consultar la versión Markdown</a>
+</header>
+<div class="layout">
+  <nav aria-label="Índice de la guía">
+    <strong>Contenido</strong>
+    <a href="#idea">1. La idea</a>
+    <a href="#estructura">2. Estructura</a>
+    <a href="#capas">3. Cada capa</a>
+    <a href="#migracion">4. La migración</a>
+    <a href="#procesos">5. Cada proceso</a>
+    <a href="#errores">6. Errores y contrato</a>
+    <a href="#ejecucion">7. Ejecutar</a>
+    <a href="#pruebas">8. Probar y aprender</a>
+  </nav>
+  <main>
+    <section id="idea">
+      <h2>1. ¿Qué significa arquitectura hexagonal?</h2>
+      <p>El negocio no debería necesitar saber si lo invoca una petición HTTP ni si guarda los datos con JPA. La arquitectura hexagonal aísla ese <strong>núcleo</strong> y lo comunica con el exterior mediante interfaces: los <strong>puertos</strong>. Las implementaciones tecnológicas son los <strong>adaptadores</strong>.</p>
+      <div class="flow" aria-label="Flujo general de una operación">
+        <div class="box">Entrada<br><strong>HTTP / Controller</strong></div><span aria-hidden="true">→</span>
+        <div class="box domain">Núcleo<br><strong>Caso de uso + dominio</strong></div><span aria-hidden="true">→</span>
+        <div class="box">Salida<br><strong>Adaptador JPA / MySQL</strong></div>
+      </div>
+      <p>El flujo de ejecución va de la entrada a la salida, pero las <strong>dependencias del código apuntan hacia dentro</strong>:</p>
+      <pre><code>infrastructure → application → domain → Java estándar
+infrastructure → domain
+
+GastoController → GestionGastosUseCase ← GastoService
+GastoService → GastoRepository ← GastoPersistenceAdapter</code></pre>
+      <p>En las dos últimas líneas, <code>←</code> indica que una clase implementa la interfaz situada a su izquierda. El servicio no importa el adaptador: importa su propio puerto.</p>
+      <ul>
+        <li><strong>Puerto de entrada:</strong> qué permite hacer la aplicación.</li>
+        <li><strong>Puerto de salida:</strong> qué necesita la aplicación del exterior.</li>
+        <li><strong>Adaptador de entrada:</strong> traduce una petición externa a un caso de uso.</li>
+        <li><strong>Adaptador de salida:</strong> implementa una necesidad del núcleo con una tecnología.</li>
+      </ul>
+      <div class="note">No existen obligatoriamente seis capas. El hexágono es una representación del aislamiento del negocio. Se conserva la carpeta solicitada <code>gasto_exagonal</code>, aunque el término habitual es <em>hexagonal</em>.</div>
+    </section>
+
+    <section id="estructura">
+      <h2>2. Mapa del proyecto</h2>
+      <p>Paquete raíz: <code>com.aprendizaje.gastoexagonal</code>, en <code>src/main/java</code>.</p>
+      <pre><code>gasto_exagonal/
+├── pom.xml
+├── README.md
+├── arquitectura-hexagonal.html
+└── src/
+    ├── main/
+    │   ├── java/com/aprendizaje/gastoexagonal/
+    │   │   ├── GastosApplication.java
+    │   │   ├── domain/
+    │   │   │   ├── model/
+    │   │   │   └── exception/
+    │   │   ├── application/
+    │   │   │   ├── dto/
+    │   │   │   ├── port/in/
+    │   │   │   ├── port/out/
+    │   │   │   └── service/
+    │   │   └── infrastructure/
+    │   │       ├── adapter/in/web/dto/
+    │   │       ├── adapter/out/persistence/
+    │   │       └── config/
+    │   └── resources/
+    │       ├── application.yaml
+    │       └── db/gastos.sql
+    └── test/
+        ├── java/com/aprendizaje/gastoexagonal/
+        │   ├── ArchitectureTest
+        │   ├── domain/GastoTest
+        │   ├── application/GastoServiceTest
+        │   └── infrastructure/
+        │       ├── GastosApiIntegrationTest
+        │       └── TransactionAndErrorsIntegrationTest
+        └── resources/application.yaml</code></pre>
+      <p class="caption">Las carpetas organizan las responsabilidades. La separación real la determinan los imports y las interfaces, no solo los nombres de los paquetes.</p>
+    </section>
+
+    <section id="capas">
+      <h2>3. Qué hay dentro de cada capa</h2>
+      <h3>3.1. Dominio · <code>domain/</code></h3>
+      <p>Define qué es un gasto y sus reglas. Solo utiliza Java estándar; no importa aplicación, Spring, HTTP, JPA ni infraestructura.</p>
+      <div class="table"><table>
+        <thead><tr><th>Clase</th><th>Qué contiene</th></tr></thead>
+        <tbody>
+          <tr><td><code>model/Gasto</code></td><td>Modelo inmutable con ID, descripción, importe, fecha y categoría. Constructor con validaciones, getters y <code>validarFechaNoFutura(hoy)</code>. Sin setters ni anotaciones tecnológicas.</td></tr>
+          <tr><td><code>model/Categoria</code></td><td>Enum original: ALIMENTACION, TRANSPORTE, VIVIENDA, OCIO, SALUD y OTROS.</td></tr>
+          <tr><td><code>exception/GastoInvalidoException</code></td><td>Incumplimiento de una regla; extiende IllegalArgumentException. No contiene estados HTTP.</td></tr>
+          <tr><td><code>exception/GastoNoEncontradoException</code></td><td>Expresa que el gasto no existe. No conoce el significado de HTTP 404.</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Reglas:</strong> descripción recortada de 1 a 100 caracteres; importe positivo, máximo 2 decimales y hasta <code>99999999.99</code>, compatible con <code>DECIMAL(10,2)</code>; fecha y categoría obligatorias. Crear y actualizar rechazan fechas futuras.</p>
+      <p>El constructor valida la estructura. La regla temporal recibe la fecha actual como argumento y se ejecuta desde el caso de uso antes de guardar. Al leer una fila se reconstruye el modelo, pero no se vuelve a aplicar esa regla temporal: una consulta no es una creación.</p>
+
+      <h3>3.2. Aplicación · <code>application/</code></h3>
+      <p>Orquesta operaciones y utiliza el dominio. No importa Spring, HTTP, JPA, MySQL ni infraestructura.</p>
+      <div class="table"><table>
+        <thead><tr><th>Elemento</th><th>Responsabilidad</th></tr></thead>
+        <tbody>
+          <tr><td><code>port/in/GestionGastosUseCase</code></td><td>Interfaz para listar, filtrar, buscar, crear, actualizar, eliminar y calcular el total.</td></tr>
+          <tr><td><code>port/in/ConsultarCategoriasUseCase</code></td><td>Interfaz para consultar las categorías.</td></tr>
+          <tr><td><code>service/GastoService</code></td><td>Implementa el puerto, comprueba existencia y rangos, construye el dominio y utiliza el repositorio abstracto.</td></tr>
+          <tr><td><code>service/CategoriaService</code></td><td>Devuelve los valores del enum sin acceder a una base de datos.</td></tr>
+          <tr><td><code>port/out/GastoRepository</code></td><td>Interfaz propia con las operaciones de persistencia necesarias. No extiende JpaRepository.</td></tr>
+          <tr><td><code>dto/GastoCommand</code></td><td>Datos de creación o actualización independientes del JSON, sin ID: al actualizar manda el de la URL.</td></tr>
+          <tr><td><code>dto/CalcularTotal</code></td><td>Record original trasladado al caso de uso: desde, hasta y totalGastos.</td></tr>
+        </tbody>
+      </table></div>
+      <p>El servicio recibe un <code>Clock</code> de Java para calcular el día actual. Se configura en UTC y se sustituye por un reloj fijo en las pruebas. Los puertos se sitúan en aplicación porque describen las capacidades y necesidades de estos casos de uso; otras variantes hexagonales pueden ubicar ciertos puertos en dominio.</p>
+
+      <h3>3.3. Entrada HTTP · <code>infrastructure/adapter/in/web/</code></h3>
+      <ul>
+        <li><code>GastoController</code> y <code>CategoriaController</code> conservan las rutas; solo llaman a puertos de entrada.</li>
+        <li><code>dto/GastoRequest</code> representa el JSON recibido y lo convierte a <code>GastoCommand</code>.</li>
+        <li><code>dto/GastoResponse</code> transforma el dominio en la respuesta JSON explícita.</li>
+        <li><code>dto/ApiError</code> conserva <code>status</code>, <code>error</code> y <code>message</code>.</li>
+        <li><code>GlobalExceptionHandler</code> traduce errores de negocio y de deserialización a HTTP.</li>
+      </ul>
+      <p>El controlador no consulta JPA ni decide si un importe es válido. Los estados HTTP pertenecen al adaptador, nunca al núcleo.</p>
+
+      <h3>3.4. Salida de persistencia · <code>infrastructure/adapter/out/persistence/</code></h3>
+      <div class="table"><table>
+        <thead><tr><th>Clase</th><th>Responsabilidad</th></tr></thead>
+        <tbody>
+          <tr><td><code>GastoJpaEntity</code></td><td>Representa la tabla gasto y contiene @Entity, @Id, @Column y @Enumerated.</td></tr>
+          <tr><td><code>GastoPersistenceMapper</code></td><td>Conversión entre modelo de dominio y entidad JPA, sin consultas ni reglas adicionales.</td></tr>
+          <tr><td><code>SpringDataGastoRepository</code></td><td>Extiende JpaRepository, filtra por categoría y calcula la suma JPQL con BETWEEN y COALESCE.</td></tr>
+          <tr><td><code>GastoPersistenceAdapter</code></td><td>Implementa el puerto de salida, invoca Spring Data y devuelve objetos del dominio.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><strong>Inversión de dependencias:</strong> el núcleo define <code>GastoRepository</code> y el adaptador externo lo implementa. Cambiar de almacenamiento implica otro adaptador y configuración, no reescribir las reglas del gasto. No siempre basta con cambiar la URL.</div>
+
+      <h3>3.5. Configuración y arranque · <code>infrastructure/config/</code></h3>
+      <ol>
+        <li><code>GastosApplication</code>, en el paquete raíz, arranca Spring Boot.</li>
+        <li>Spring Data crea el repositorio JPA y Spring lo inyecta en el adaptador.</li>
+        <li><code>BeanConfiguration</code> crea el reloj UTC y los servicios Java.</li>
+        <li>Envuelve <code>GastoService</code> en <code>TransactionalGastoUseCase</code>.</li>
+        <li>Spring aplica un proxy transaccional a este decorador y lo inyecta como puerto de entrada en el controlador.</li>
+      </ol>
+      <p>El <strong>decorador</strong> implementa la misma interfaz y delega en el servicio. Las lecturas usan transacciones <code>readOnly</code>; crear, actualizar y eliminar usan escritura. Buscar y guardar en una actualización forman una sola transacción, que se revierte ante un fallo de ejecución. Así, <code>@Transactional</code> permanece fuera de aplicación.</p>
+      <p class="caption">Una transacción no equivale a control de concurrencia optimista: este ejemplo no incorpora un campo @Version.</p>
+    </section>
+
+    <section id="migracion">
+      <h2>4. De las clases originales al nuevo diseño</h2>
+      <div class="table"><table>
+        <thead><tr><th>En gastos</th><th>En gasto_exagonal</th></tr></thead>
+        <tbody>
+          <tr><td>GastosApplication</td><td>Mismo punto de arranque con un nuevo paquete.</td></tr>
+          <tr><td>entity/Gasto</td><td>Se divide en Gasto del dominio, GastoJpaEntity y DTOs HTTP.</td></tr>
+          <tr><td>entity/Categoria</td><td>Se mueve a domain/model sin cambiar sus valores.</td></tr>
+          <tr><td>service/GastoService y CategoriaService</td><td>Conservan nombres y operaciones; implementan puertos sin anotaciones de Spring.</td></tr>
+          <tr><td>repository/GastoRepository</td><td>Se separa en puerto propio, adaptador y repositorio Spring Data.</td></tr>
+          <tr><td>controller/*</td><td>Adaptadores HTTP que dependen de interfaces de entrada.</td></tr>
+          <tr><td>dto/CalcularTotal</td><td>Resultado de aplicación.</td></tr>
+          <tr><td>dto/ApiError</td><td>DTO del adaptador HTTP.</td></tr>
+          <tr><td>exception/GlobalExceptionHandler</td><td>Adaptador HTTP con traducción de excepciones específicas.</td></tr>
+          <tr><td>RuntimeException, IllegalArgumentException y ResponseStatusException en servicios</td><td>Excepciones de negocio GastoNoEncontradoException y GastoInvalidoException. El original no tenía excepciones de negocio propias.</td></tr>
+          <tr><td>@Service y @Transactional en servicios</td><td>Configuración de beans y decorador transaccional en infraestructura.</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Mejoras intencionadas:</strong> validación también al actualizar; fecha y categoría obligatorias; importe limitado a la capacidad SQL; descripción recortada; distinción entre 400, 404 y 500; reloj UTC. El proyecto original permanece sin cambios.</p>
+    </section>
+
+    <section id="procesos">
+      <h2>5. Cada proceso, paso a paso</h2>
+      <h3>5.1. Crear · POST /api/v1/gastos</h3>
+      <ol>
+        <li>El cliente envía JSON. Spring lo convierte a <code>GastoRequest</code>; un JSON inválido genera 400.</li>
+        <li>El controlador transforma el request a <code>GastoCommand</code> y llama al puerto.</li>
+        <li>El decorador abre una transacción de escritura.</li>
+        <li>El servicio construye un <code>Gasto</code>; su constructor valida los datos.</li>
+        <li>Con la fecha obtenida del reloj, se valida que el gasto no sea futuro.</li>
+        <li>El servicio invoca <code>GastoRepository.save</code>.</li>
+        <li>El adaptador convierte a entidad; Spring Data inserta la fila y MySQL genera el ID.</li>
+        <li>Se reconstruye el dominio con ID, se confirma la transacción y se devuelve <strong>201 con Location y sin cuerpo</strong>, como en el original.</li>
+      </ol>
+      <h3>5.2. Listar o filtrar · GET /api/v1/gastos</h3>
+      <ol>
+        <li>Sin categoría, se llama a <code>findAll</code>; con <code>?categoria=OCIO</code>, a <code>findByCategoria</code>.</li>
+        <li>El decorador abre lectura; el servicio usa el puerto de salida y el adaptador consulta JPA.</li>
+        <li>Las entidades se convierten a dominio y el controlador las convierte a <code>GastoResponse</code>.</li>
+        <li>Se devuelve <strong>200</strong> con una lista o <code>[]</code>. Una categoría desconocida genera 400.</li>
+      </ol>
+      <h3>5.3. Buscar · GET /api/v1/gastos/{id}</h3>
+      <ol>
+        <li>El servicio comprueba que el ID sea positivo y consulta el puerto de salida.</li>
+        <li>Si existe, el modelo se convierte a respuesta: <strong>200</strong>.</li>
+        <li>Si no existe, lanza <code>GastoNoEncontradoException</code>; el manejador la transforma en <strong>404</strong>.</li>
+      </ol>
+      <h3>5.4. Actualizar · PUT /api/v1/gastos/{id}</h3>
+      <ol>
+        <li>Se reciben todos los campos. PUT no implementa actualizaciones parciales.</li>
+        <li>En una transacción de escritura se busca el gasto; si falta, se devuelve 404.</li>
+        <li>Se construye un nuevo modelo con el mismo ID y se aplican las mismas reglas que en creación.</li>
+        <li>Se guarda mediante el adaptador y se devuelve <strong>200 con el gasto actualizado</strong>.</li>
+        <li>Los datos inválidos generan 400 y no cambian el registro anterior.</li>
+      </ol>
+      <h3>5.5. Eliminar · DELETE /api/v1/gastos/{id}</h3>
+      <ol>
+        <li>Se abre escritura y se comprueba la existencia; si no existe, 404.</li>
+        <li>El adaptador elimina por el ID encontrado.</li>
+        <li>Se confirma la transacción: <strong>204 sin cuerpo</strong>.</li>
+      </ol>
+      <h3>5.6. Sumar · GET /api/v1/gastos/total</h3>
+      <ol>
+        <li>Se leen <code>desde</code> y <code>hasta</code> en formato ISO, por ejemplo 2026-10-01.</li>
+        <li>El servicio exige ambas fechas y <code>desde ≤ hasta</code>; un rango invertido produce 400.</li>
+        <li>El adaptador ejecuta SUM con BETWEEN: <strong>incluye ambos extremos</strong>.</li>
+        <li>COALESCE devuelve cero si no hay filas.</li>
+        <li>La aplicación construye <code>CalcularTotal</code> y responde <strong>200</strong> con desde, hasta y totalGastos.</li>
+      </ol>
+      <h3>5.7. Categorías · GET /api/v1/categorias</h3>
+      <ol>
+        <li>El controlador invoca <code>ConsultarCategoriasUseCase</code>.</li>
+        <li><code>CategoriaService</code> obtiene los seis valores del enum.</li>
+        <li>Devuelve <strong>200 con un array de cadenas</strong>, sin consultas ni transacción de base de datos.</li>
+      </ol>
+      <h3>5.8. Un error también tiene un flujo</h3>
+      <p>El dominio o el caso de uso lanzan una excepción sin referencias HTTP. La transacción se revierte si corresponde. El adaptador de entrada captura la excepción y decide el estado y el cuerpo de respuesta. El núcleo no necesita saber cómo se comunica el error al cliente.</p>
+    </section>
+
+    <section id="errores">
+      <h2>6. Contrato HTTP y errores</h2>
+      <div class="table"><table>
+        <thead><tr><th>Operación</th><th>Ruta</th><th>Éxito</th></tr></thead>
+        <tbody>
+          <tr><td>GET</td><td>/api/v1/gastos [?categoria=OCIO]</td><td>200 · lista</td></tr>
+          <tr><td>GET</td><td>/api/v1/gastos/{id}</td><td>200 · gasto</td></tr>
+          <tr><td>POST</td><td>/api/v1/gastos</td><td>201 · Location, sin cuerpo</td></tr>
+          <tr><td>PUT</td><td>/api/v1/gastos/{id}</td><td>200 · gasto actualizado</td></tr>
+          <tr><td>DELETE</td><td>/api/v1/gastos/{id}</td><td>204 · sin cuerpo</td></tr>
+          <tr><td>GET</td><td>/api/v1/gastos/total?desde=AAAA-MM-DD&amp;hasta=AAAA-MM-DD</td><td>200 · total</td></tr>
+          <tr><td>GET</td><td>/api/v1/categorias</td><td>200 · categorías</td></tr>
+        </tbody>
+      </table></div>
+      <h3>JSON de creación o actualización</h3>
+      <pre><code>{
+  "descripcion": "Compra semanal",
+  "importe": 54.30,
+  "fecha": "2026-10-03",
+  "categoria": "ALIMENTACION"
+}</code></pre>
+      <div class="table"><table>
+        <thead><tr><th>Situación</th><th>Respuesta</th></tr></thead>
+        <tbody>
+          <tr><td>Reglas inválidas, ID no positivo, fecha futura o rango invertido</td><td>400 · GastoInvalidoException → ApiError</td></tr>
+          <tr><td>JSON inválido, categoría desconocida, parámetro ausente o formato incorrecto</td><td>400 · Excepción de MVC → ApiError</td></tr>
+          <tr><td>Gasto inexistente</td><td>404 · GastoNoEncontradoException → ApiError</td></tr>
+          <tr><td>Fallo inesperado de ejecución</td><td>500 · Registro en logs y mensaje genérico sin información interna</td></tr>
+        </tbody>
+      </table></div>
+      <pre><code>{"status":404,"error":"Not Found","message":"Gasto no encontrado: 123"}</code></pre>
+      <p>El original trataba cualquier RuntimeException como un 404. Aquí un fallo de persistencia no se presenta como si simplemente no existiera un gasto.</p>
+    </section>
+
+    <section id="ejecucion">
+      <h2>7. Cómo ejecutarlo</h2>
+      <p>Requisitos: <strong>JDK 21, Maven 3.9 o posterior y MySQL 8</strong>. Se mantiene Spring Boot <strong>4.1.2</strong>, la versión del POM original; el repositorio Maven o proxy debe poder resolverla.</p>
+      <h3>Paso 1 · Preparar MySQL</h3>
+      <p>Desde un cliente MySQL, con permisos para crear bases, ejecuta el script manual:</p>
+      <pre><code>SOURCE C:/Users/0019601/Documents/ruta-aprendizaje-java/gasto_exagonal/src/main/resources/db/gastos.sql;</code></pre>
+      <p>Adapta la ruta si has movido el repositorio. Crea <code>gasto_exagonal_db</code>, la tabla y datos de ejemplo. No toca <code>gastos_db</code>.</p>
+      <div class="note warning">El SQL es de inicialización, no una migración idempotente: no lo ejecutes repetidamente sobre una base ya preparada. Hibernate usa <code>ddl-auto: validate</code>, por lo que comprueba las tablas, pero no las crea.</div>
+      <h3>Paso 2 · Arrancar en PowerShell</h3>
+      <pre><code>cd gasto_exagonal
+$env:DB_USERNAME = "root"
+$env:DB_PASSWORD = "tu_password_local"
+mvn spring-boot:run</code></pre>
+      <p>Puerto predeterminado: <strong>8081</strong>, independiente del 8080 original. Variables opcionales: <code>SERVER_PORT</code>, <code>DB_USERNAME</code> y <code>DB_URL</code>. No se guarda la contraseña en el proyecto.</p>
+      <p class="caption">La URL local desactiva TLS y no se añade autenticación: es un ejemplo didáctico, no una configuración de producción.</p>
+      <h3>Paso 3 · Hacer una petición</h3>
+      <pre><code>$body = @{
+    descripcion = "Compra semanal"
+    importe = 54.30
+    fecha = "2026-10-03"
+    categoria = "ALIMENTACION"
+} | ConvertTo-Json
+
+$respuesta = Invoke-WebRequest -Method Post `
+    -Uri "http://localhost:8081/api/v1/gastos" `
+    -ContentType "application/json" -Body $body
+$respuesta.Headers.Location
+
+Invoke-RestMethod "http://localhost:8081/api/v1/gastos?categoria=ALIMENTACION"
+Invoke-RestMethod "http://localhost:8081/api/v1/gastos/total?desde=2026-10-01&amp;hasta=2026-10-31"
+Invoke-RestMethod "http://localhost:8081/api/v1/categorias"</code></pre>
+    </section>
+
+    <section id="pruebas">
+      <h2>8. Cómo probarlo y aprender con él</h2>
+      <p>Desde la carpeta del proyecto:</p>
+      <pre><code>mvn test
+mvn package</code></pre>
+      <div class="table"><table>
+        <thead><tr><th>Test</th><th>Qué demuestra</th></tr></thead>
+        <tbody>
+          <tr><td>GastoTest</td><td>Reglas del dominio, nulos, límites y fecha futura, sin Spring ni base de datos.</td></tr>
+          <tr><td>GastoServiceTest</td><td>Casos de uso, CRUD, filtros, rangos y categorías con Mockito y reloj fijo, sin arrancar Spring.</td></tr>
+          <tr><td>GastosApiIntegrationTest</td><td>Flujo JSON → controlador → caso de uso → JPA → H2; respuestas HTTP, consultas, suma inclusiva y errores.</td></tr>
+          <tr><td>TransactionAndErrorsIntegrationTest</td><td>Comprueba las transacciones de lectura y escritura del decorador real y la respuesta 500 sin detalles internos; simula el puerto de salida.</td></tr>
+          <tr><td>ArchitectureTest</td><td>Imports permitidos del núcleo y separación de controladores respecto a servicios concretos y persistencia.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Los tests usan H2 en memoria, declarado como dependencia de test, y sustituyen el datasource normal. No necesitan MySQL ni contraseña. Los de API con persistencia revierten sus datos al terminar. Los tests del decorador no abren una transacción de test: verifican la transacción de la infraestructura real con el puerto de salida simulado.</p>
+      <div class="note warning">H2 no verifica toda la compatibilidad con MySQL: el esquema de prueba lo crea Hibernate y no se ejecuta el script SQL de MySQL. La prueba de arquitectura revisa imports del código fuente: es didáctica, no un análisis completo de bytecode.</div>
+      <h3>Orden de lectura recomendado</h3>
+      <ol>
+        <li><strong>Gasto y Categoria:</strong> entiende las reglas sin pensar en una API.</li>
+        <li><strong>Puertos:</strong> identifica qué ofrece y qué necesita el núcleo.</li>
+        <li><strong>GastoService:</strong> sigue cómo se orquesta una operación.</li>
+        <li><strong>Controladores y DTOs:</strong> observa dónde comienza y termina HTTP.</li>
+        <li><strong>Adaptador JPA y mapper:</strong> localiza el cambio de representación.</li>
+        <li><strong>Configuración y decorador:</strong> comprende el cableado y la transacción.</li>
+      </ol>
+      <p>Ejercicio: implementa el puerto de salida con un repositorio en memoria. Si puedes reutilizar el servicio sin cambiar su lógica, has entendido la ventaja de puertos y adaptadores.</p>
+    </section>
+  </main>
+</div>
+<footer>gasto_exagonal · Guía autocontenida, sin dependencias externas · <a href="#idea">Volver al inicio</a></footer>
+</body>
+</html>
